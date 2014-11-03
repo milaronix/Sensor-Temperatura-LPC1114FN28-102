@@ -24,6 +24,8 @@
 void delay_us( int);
 void delay_ms( int);
 void desliza_texto(int posiciones);
+void splash_screen();
+void set_splash_screen();
 
 int main(){
 	int i;
@@ -66,10 +68,8 @@ int main(){
 	U0THR = 33;delay_ms( 100);
 	U0THR = 33;delay_ms( 100);
 	
-	desliza_texto(26);
+	set_splash_screen();
 	
-	while(1){
-	}
 }
 
 void desliza_texto(int posiciones){
@@ -80,9 +80,24 @@ void desliza_texto(int posiciones){
 			delay_ms(900);
 	}
 }
-void splash_screen (){
+void splash_screen(){
 	U0THR = 0x7c;						//comando escape 
 	U0THR = 9;							//habilita splash screen
+}
+
+void set_splash_screen(){
+	U0THR = 0x7c;						//comando escape 
+	U0THR = 10;						//comando escape 
+	/*U0THR = 60; 	//<
+	U0THR = 99;	  //c
+	U0THR = 111;	//o
+	U0THR = 110;	//n
+	U0THR = 116;	//t
+	U0THR = 114;	//r
+	U0THR = 111;	//o
+	U0THR = 108;	//l
+	U0THR = 62;	  //>
+	U0THR = 9;	  //j*/
 }
 
 void delay_us(int delay)
