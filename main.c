@@ -26,9 +26,9 @@ void delay_ms( int);
 void desliza_texto(int posiciones);
 void splash_screen();
 void set_splash_screen();
+void imprime();
 
 int main(){
-	int i;
 	IOCON_PIO1_7 |= 0x01;			//TxD enable to output
 	//LPC_SYSCON->SYSAHBCLKCTRL |= (1 << 12);
 	SYSAHBCLKCTRL |= (1 << 12); 	//Clock to UART
@@ -41,35 +41,23 @@ int main(){
 	U0LCR &= ~(1 << 7); 			//DLAB back to 0 to transmit
 	U0LCR |= 0x03; 					//8-bit data width
 	
-	delay_ms(2000);					//espera lo suficiente para el arranque del display LCD
-		
-	U0THR = 0xfe;						//comando escape para poder correr el cursor
-	U0THR = 130;						//corrimiento cursor para centrar la frase
-	U0THR = 70;delay_ms( 100);
-	U0THR = 101;delay_ms( 100);
-	U0THR = 108;delay_ms( 100);
-	U0THR = 105;delay_ms( 100);
-	U0THR = 99;delay_ms( 100);
-	U0THR = 105;delay_ms( 100);
-	U0THR = 100;delay_ms( 100);
-	U0THR = 97;delay_ms( 100);
-	U0THR = 100;delay_ms( 100);
-	U0THR = 101;delay_ms( 100);
-	U0THR = 115;delay_ms( 100);
+	delay_ms(2000);					//espera lo suficiente para que arranque el display LCD
 	
-	U0THR = 0xfe;						//comando escape para poder correr el cursor
-	U0THR = 197;						//corrimiento cursor para centrar la frase
+	imprime("  y esto es un     mensaje");	
 	
-	U0THR = 73;delay_ms( 100);
-	U0THR = 110;delay_ms( 100);
-	U0THR = 103;delay_ms( 100);
-	U0THR = 101;delay_ms( 100);
-	U0THR = 33;delay_ms( 100);
-	U0THR = 33;delay_ms( 100);
-	U0THR = 33;delay_ms( 100);
+}
+
+void imprime(char *texto){
+	int posicion = 0;
 	
-	set_splash_screen();
-	
+	while(texto[posicion]){		
+		if(posicion == 16){
+			U0THR = 0xfe;						//comando escape para poder correr el cursor
+			U0THR = 192;						//cambia a la primer posicion de la segunda linea
+		}
+		U0THR = texto[posicion];delay_ms(100);  //imprime
+		posicion++;
+	}
 }
 
 void desliza_texto(int posiciones){
@@ -88,16 +76,6 @@ void splash_screen(){
 void set_splash_screen(){
 	U0THR = 0x7c;						//comando escape 
 	U0THR = 10;						//comando escape 
-	/*U0THR = 60; 	//<
-	U0THR = 99;	  //c
-	U0THR = 111;	//o
-	U0THR = 110;	//n
-	U0THR = 116;	//t
-	U0THR = 114;	//r
-	U0THR = 111;	//o
-	U0THR = 108;	//l
-	U0THR = 62;	  //>
-	U0THR = 9;	  //j*/
 }
 
 void delay_us(int delay)
