@@ -7,7 +7,8 @@
 // funcion delay : http://www.eevblog.com/forum/microcontrollers/lpc1114-28dip-tutorials/
 // informacion calculo baud rate: csserver.evansville.edu/~blandfor/EE354/ARMLecture/ARMLect7.pdf
 
-#include "LPC11xx.h"
+#include <LPC11xx.h>			/* LPC11xx Peripheral Registers */
+#include "system_LPC11xx.h"
 
 #define U0THR (*((volatile unsigned long *) 0x40008000)) //Transmit Buffer
 #define U0DLL (*((volatile unsigned long *) 0x40008000)) //Divisor Latch LSByte
@@ -16,10 +17,7 @@
 //Autobaud control
 #define U0FDR (*((volatile unsigned long *) 0x40008028)) //Fractional divide register
 #define U0TER (*((volatile unsigned long *) 0x40008030)) //Transmit enable
-//Enable TxD to output
-#define IOCON_PIO1_7 (*((volatile unsigned long*) 0x400440A8)) //Pin control register
-#define SYSAHBCLKCTRL (*((volatile unsigned long *) 0x40048080)) //System AHB clock control
-#define UARTCLKDIV (*((volatile unsigned long *) 0x40048098)) //UART clock divider
+
 
 /*void delay_us( int);
 void delay_ms( int);
@@ -120,11 +118,38 @@ void imprime(char *texto, int delay, int desliza){
 	}
 }
 
+void buzzer(){
+	int m;
+	int i;
+	int n = 0;
+	
+	while(n < 999){
+		while (m < 10){//ciclo uno
+			LPC_TMR16B1 ->MR0 = LPC_TMR16B1 ->MR0 + 1;
+				while (i < 99999){
+				i = i + 1;
+				};
+			i = 0;
+			m = m+1;
+		};
+		m=0;i=0;
+		while (m < 10){//ciclo dos
+			LPC_TMR16B1 ->MR0 = LPC_TMR16B1 ->MR0 - 1;
+				while (i < 99999){
+				i = i + 1;
+				};
+			i = 0;
+			m = m+1;
+		};
+		m=0;i=0;
+	}
+	
+}
+
 int main(){
-	IOCON_PIO1_7 |= 0x01;			//TxD enable to output
-	//LPC_SYSCON->SYSAHBCLKCTRL |= (1 << 12);
-	SYSAHBCLKCTRL |= (1 << 12); 	//Clock to UART
-	UARTCLKDIV |= 4; 				//48000000/4 = 12 MHz for UARTPCLK
+	LPC_IOCON ->PIO1_7 |= 0x01;			//TxD enable to output
+	LPC_SYSCON->SYSAHBCLKCTRL |= (1 << 12);		//Clock to UART
+	LPC_SYSCON->UARTCLKDIV |= 4; 				//48000000/4 = 12 MHz for UARTPCLK
 	U0FCR |= 0x01; 					//Enable FIFO buffer
 	U0LCR |= 1 << 7; 				//DLAB must be 1 to write to U0DLL, and U0FDR
 	//divAdd=7 mulVal=10 dll=23 //Set up baud rate
@@ -133,14 +158,26 @@ int main(){
 	U0LCR &= ~(1 << 7); 			//DLAB back to 0 to transmit
 	U0LCR |= 0x03; 					//8-bit data width
 	
-	delay_ms(2000);					//espera lo suficiente para que arranque el display LCD
-	imprime("    esto es un  mensaje estatico",100,0);	
+	// configuracion buzzer
+	LPC_SYSCON ->SYSAHBCLKCTRL |= (1 << 8); // Enable Clock for TMR1
+	LPC_IOCON ->PIO1_9 |= (1 << 0); // PIN1_9 = CT16B1_MAT0
+	LPC_TMR16B1 ->MR0 = 0;
+	LPC_TMR16B1 ->PR = 12000;
+	LPC_TMR16B1 ->MR3 = 10; // Cycle Length
+	LPC_TMR16B1 ->MCR |= (1 << 10); // TC Reset on MR3 Match
+	LPC_TMR16B1 ->PWMC |= (1 << 0); // PWM Mode
+	LPC_TMR16B1 ->TCR |= (1 << 0); // GO
+	
+	buzzer();
+	
+	delay_ms(2500);					//espera lo suficiente para que arranque el display LCD
+	
+	imprime("esto es vida... lo demas son",100,0);	
+	delay_ms(100);
+	limpia_pantalla();
+	delay_ms(100);
+	imprime("licenciados...",100,0);
 	delay_ms(1000);
 	limpia_pantalla();
-	delay_ms(1000);
-	imprime("este se puede deslizar",100,1);
-	delay_ms(1000);
-	limpia_pantalla();
-	delay_ms(1000);
-	imprime("y este este es infinito",100,2);
+	
 }
