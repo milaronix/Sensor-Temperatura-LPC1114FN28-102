@@ -77,6 +77,11 @@ void limpia_pantalla(){
 	U0THR = 0x01;						//habilita splash screen
 }
 
+void set_brillo(int brillo){
+	U0THR = 0x7c;						//comando escape 
+	U0THR = brillo;						//habilita splash screen
+}
+
 void enciende_pantalla(){
 	U0THR = 0xfe;						//comando escape 
 	U0THR = 0x0c;						//habilita splash screen
@@ -90,6 +95,11 @@ void apaga_pantalla(){
 void enciende_cursor(){
 	U0THR = 0xfe;						//comando escape 
 	U0THR = 0x0d;						//habilita splash screen
+}
+
+void corre_cursor(int corrimiento){
+	U0THR = 0xfe;						//comando escape 
+	U0THR = (128 + corrimiento);						//habilita splash screen
 }
 
 void splash_screen(){
@@ -212,7 +222,11 @@ void init_buzzer(){
 
 int main(){
 	
-	int mi_variable = 0;
+	int valorADC = 0;
+	float milton = 0;
+	float temper = 0;
+	float resistencia = 0;
+	char *mensajito;
 	
 	init_uart();
 	//init_buzzer();	
@@ -220,137 +234,39 @@ int main(){
 	
 	delay_ms(2500);					//espera lo suficiente para que arranque el display LCD		
 	
-	imprime("si enciende...",100,0);
+	/*imprime("si enciende...",100,0);
 	delay_ms(500);	
-	limpia_pantalla();
+	limpia_pantalla();*/
+	
+	//set_brillo(157);	
+	//imprime("ADC:", 100, 0);
+	//corre_cursor(64);
+	//imprime("TMP:", 100, 0);
+	
 	
 	while(1){
 		
-		mi_variable = readADC();
+		valorADC = readADC();
+		milton = ((3.3 * valorADC) / 1024);
+		resistencia = ((-1000) / (milton - 3.3));
 		
-		imprime("entro al while",100,0);
-		delay_ms(100);	
+		if((resistencia >= 1) && (resistencia < 849)){
+			temper = (-10/21) * (resistencia - 807) + 43;
+		}
+		if((resistencia >= 849) && (resistencia < 898)){
+			temper = (-1/7) * (resistencia - 849) + 23;
+		}
+		if((resistencia >= 898) && (resistencia < 951)){
+			temper = (-2/51) * (resistencia - 898) + 16;
+		}
+		if((resistencia >= 951) && (resistencia < 1000)){
+			temper = (-5/49) * (resistencia - 951) + 12;
+		}
+	
+		sprintf(mensajito,"%f", resistencia);
+		imprime(mensajito,100,0);
+		delay_ms(100);
 		limpia_pantalla();
-		
-		if((mi_variable < 500)){
-			imprime("menor a 500",100,0);
-			delay_ms(2500);	
-			limpia_pantalla();
-		}
-		
-		if((mi_variable >= 500) && (mi_variable < 510)){
-			imprime("de 500 a 510",100,0);
-			delay_ms(2500);	
-			limpia_pantalla();
-		}
-		
-		if((mi_variable >= 510) && (mi_variable < 520)){
-			imprime("de 510 a 520",100,0);
-			delay_ms(2500);	
-			limpia_pantalla();
-		}
-		
-		if((mi_variable >= 520) && (mi_variable < 530)){
-			imprime("de 520 a 530",100,0);
-			delay_ms(2500);	
-			limpia_pantalla();
-		}
-		
-		if((mi_variable >= 530) && (mi_variable < 540)){
-			imprime("de 530 a 540",100,0);
-			delay_ms(2500);	
-			limpia_pantalla();
-		}
-		
-		if((mi_variable >= 540) && (mi_variable < 550)){
-			imprime("de 540 a 550",100,0);
-			delay_ms(2500);	
-			limpia_pantalla();
-		}
-		
-		if((mi_variable >= 550) && (mi_variable < 560)){
-			imprime("de 550 a 560",100,0);
-			delay_ms(2500);	
-			limpia_pantalla();
-		}
-		
-		if((mi_variable >= 560) && (mi_variable < 570)){
-			imprime("de 560 a 570",100,0);
-			delay_ms(2500);	
-			limpia_pantalla();
-		}
-		
-		if((mi_variable >= 570) && (mi_variable < 580)){
-			imprime("de 570 a 580",100,0);
-			delay_ms(2500);	
-			limpia_pantalla();
-		}
-		
-		if((mi_variable >= 580) && (mi_variable < 590)){
-			imprime("de 580 a 590",100,0);
-			delay_ms(2500);	
-			limpia_pantalla();
-		}
-		
-		if((mi_variable >= 590) && (mi_variable < 600)){
-			imprime("de 590 a 600",100,0);
-			delay_ms(2500);	
-			limpia_pantalla();
-		}
-		
-		if((mi_variable >= 600) && (mi_variable < 700)){
-			imprime("de 600 a 700",100,0);
-			delay_ms(2500);	
-			limpia_pantalla();
-		}
-		
-		if((mi_variable >= 700) && (mi_variable < 800)){
-			imprime("de 700 a 800",100,0);
-			delay_ms(2500);	
-			limpia_pantalla();
-		}
-		
-		if((mi_variable >= 800) && (mi_variable < 900)){
-			imprime("de 800 a 900",100,0);
-			delay_ms(2500);	
-			limpia_pantalla();
-		}
-		
-		if((mi_variable >= 900) && (mi_variable < 1000)){
-			imprime("de 900 a 1000",100,0);
-			delay_ms(2500);	
-			limpia_pantalla();
-		}
-		
-		if((mi_variable >= 1000) && (mi_variable < 1100)){
-			imprime("de 1000 a 1100",100,0);
-			delay_ms(2500);	
-			limpia_pantalla();
-		}
-		
-		if((mi_variable >= 1100) && (mi_variable < 1200)){
-			imprime("de 1100 a 1200",100,0);
-			delay_ms(2500);	
-			limpia_pantalla();
-		}
-		
-		if((mi_variable >= 1200) && (mi_variable < 1300)){
-			imprime("de 1200 a 1300",100,0);
-			delay_ms(2500);	
-			limpia_pantalla();
-		}
-		
-		if((mi_variable >= 1300) && (mi_variable < 1400)){
-			imprime("de 1300 a 1400",100,0);
-			delay_ms(2500);	
-			limpia_pantalla();
-		}
-		
-		if((mi_variable >= 1400)){
-			imprime("mayor a 1400",100,0);
-			delay_ms(2500);	
-			limpia_pantalla();
-		}
 	}
 	
 }
