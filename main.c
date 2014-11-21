@@ -9,6 +9,10 @@
 
 #include <LPC11xx.h>			/* LPC11xx Peripheral Registers */
 #include "system_LPC11xx.h"
+#include <stdio.h>
+
+
+#define MASK(x) (1UL << (x))
 
 #define U0THR (*((volatile unsigned long *) 0x40008000)) //Transmit Buffer
 #define U0DLL (*((volatile unsigned long *) 0x40008000)) //Divisor Latch LSByte
@@ -71,6 +75,21 @@ void desliza_texto(int posiciones){
 void limpia_pantalla(){
 	U0THR = 0xfe;						//comando escape 
 	U0THR = 0x01;						//habilita splash screen
+}
+
+void enciende_pantalla(){
+	U0THR = 0xfe;						//comando escape 
+	U0THR = 0x0c;						//habilita splash screen
+}
+
+void apaga_pantalla(){
+	U0THR = 0xfe;						//comando escape 
+	U0THR = 0x08;						//habilita splash screen
+}
+
+void enciende_cursor(){
+	U0THR = 0xfe;						//comando escape 
+	U0THR = 0x0d;						//habilita splash screen
 }
 
 void splash_screen(){
@@ -146,7 +165,27 @@ void buzzer(){
 	
 }
 
-int main(){
+void Init_ADC(void){
+	LPC_SYSCON->PDRUNCFG &= ~(MASK(4));//Encender ADC
+	LPC_SYSCON->SYSAHBCLKCTRL |= MASK(13);//Clock para ADC
+	LPC_IOCON->R_PIO0_11 &= ~0x8F;//Resetear configuración de IO
+	LPC_IOCON->R_PIO0_11 |= 0x0A;//Selección de modo análogo
+	LPC_ADC->CR = (0x01<<0) | (0x0A<<8);//ADC0 con preescala
+	LPC_ADC->CR &= (~MASK(16)) & (~MASK(17)) & (~MASK(24));//11 ciclos para el clock
+	LPC_ADC->CR &= 0xF8FFFFFF;//Parar ADC
+}
+
+uint32_t readADC(){
+   uint32_t regVal,ADC_data;
+   LPC_ADC->CR |= (1<<24);//ADC listo para leer datos
+   while(!(LPC_ADC->GDR & MASK(31)));//Espera a que el dato este listo
+   regVal = LPC_ADC->DR[0];//Lee el dato del ADC
+   LPC_ADC->CR &= 0xF8FFFFFF;//Paro al ADC
+   ADC_data = (regVal>>6) & 0x3FF;
+   return ADC_data;
+}
+
+void init_uart(){
 	LPC_IOCON ->PIO1_7 |= 0x01;			//TxD enable to output
 	LPC_SYSCON->SYSAHBCLKCTRL |= (1 << 12);		//Clock to UART
 	LPC_SYSCON->UARTCLKDIV |= 4; 				//48000000/4 = 12 MHz for UARTPCLK
@@ -157,7 +196,9 @@ int main(){
 	U0DLL = 46;
 	U0LCR &= ~(1 << 7); 			//DLAB back to 0 to transmit
 	U0LCR |= 0x03; 					//8-bit data width
-	
+}
+
+void init_buzzer(){
 	// configuracion buzzer
 	LPC_SYSCON ->SYSAHBCLKCTRL |= (1 << 8); // Enable Clock for TMR1
 	LPC_IOCON ->PIO1_9 |= (1 << 0); // PIN1_9 = CT16B1_MAT0
@@ -167,17 +208,149 @@ int main(){
 	LPC_TMR16B1 ->MCR |= (1 << 10); // TC Reset on MR3 Match
 	LPC_TMR16B1 ->PWMC |= (1 << 0); // PWM Mode
 	LPC_TMR16B1 ->TCR |= (1 << 0); // GO
+}
+
+int main(){
 	
-	buzzer();
+	int mi_variable = 0;
 	
-	delay_ms(2500);					//espera lo suficiente para que arranque el display LCD
+	init_uart();
+	//init_buzzer();	
+	Init_ADC();
 	
-	imprime("esto es vida... lo demas son",100,0);	
-	delay_ms(100);
+	delay_ms(2500);					//espera lo suficiente para que arranque el display LCD		
+	
+	imprime("si enciende...",100,0);
+	delay_ms(500);	
 	limpia_pantalla();
-	delay_ms(100);
-	imprime("licenciados...",100,0);
-	delay_ms(1000);
-	limpia_pantalla();
+	
+	while(1){
+		
+		mi_variable = readADC();
+		
+		imprime("entro al while",100,0);
+		delay_ms(100);	
+		limpia_pantalla();
+		
+		if((mi_variable < 500)){
+			imprime("menor a 500",100,0);
+			delay_ms(2500);	
+			limpia_pantalla();
+		}
+		
+		if((mi_variable >= 500) && (mi_variable < 510)){
+			imprime("de 500 a 510",100,0);
+			delay_ms(2500);	
+			limpia_pantalla();
+		}
+		
+		if((mi_variable >= 510) && (mi_variable < 520)){
+			imprime("de 510 a 520",100,0);
+			delay_ms(2500);	
+			limpia_pantalla();
+		}
+		
+		if((mi_variable >= 520) && (mi_variable < 530)){
+			imprime("de 520 a 530",100,0);
+			delay_ms(2500);	
+			limpia_pantalla();
+		}
+		
+		if((mi_variable >= 530) && (mi_variable < 540)){
+			imprime("de 530 a 540",100,0);
+			delay_ms(2500);	
+			limpia_pantalla();
+		}
+		
+		if((mi_variable >= 540) && (mi_variable < 550)){
+			imprime("de 540 a 550",100,0);
+			delay_ms(2500);	
+			limpia_pantalla();
+		}
+		
+		if((mi_variable >= 550) && (mi_variable < 560)){
+			imprime("de 550 a 560",100,0);
+			delay_ms(2500);	
+			limpia_pantalla();
+		}
+		
+		if((mi_variable >= 560) && (mi_variable < 570)){
+			imprime("de 560 a 570",100,0);
+			delay_ms(2500);	
+			limpia_pantalla();
+		}
+		
+		if((mi_variable >= 570) && (mi_variable < 580)){
+			imprime("de 570 a 580",100,0);
+			delay_ms(2500);	
+			limpia_pantalla();
+		}
+		
+		if((mi_variable >= 580) && (mi_variable < 590)){
+			imprime("de 580 a 590",100,0);
+			delay_ms(2500);	
+			limpia_pantalla();
+		}
+		
+		if((mi_variable >= 590) && (mi_variable < 600)){
+			imprime("de 590 a 600",100,0);
+			delay_ms(2500);	
+			limpia_pantalla();
+		}
+		
+		if((mi_variable >= 600) && (mi_variable < 700)){
+			imprime("de 600 a 700",100,0);
+			delay_ms(2500);	
+			limpia_pantalla();
+		}
+		
+		if((mi_variable >= 700) && (mi_variable < 800)){
+			imprime("de 700 a 800",100,0);
+			delay_ms(2500);	
+			limpia_pantalla();
+		}
+		
+		if((mi_variable >= 800) && (mi_variable < 900)){
+			imprime("de 800 a 900",100,0);
+			delay_ms(2500);	
+			limpia_pantalla();
+		}
+		
+		if((mi_variable >= 900) && (mi_variable < 1000)){
+			imprime("de 900 a 1000",100,0);
+			delay_ms(2500);	
+			limpia_pantalla();
+		}
+		
+		if((mi_variable >= 1000) && (mi_variable < 1100)){
+			imprime("de 1000 a 1100",100,0);
+			delay_ms(2500);	
+			limpia_pantalla();
+		}
+		
+		if((mi_variable >= 1100) && (mi_variable < 1200)){
+			imprime("de 1100 a 1200",100,0);
+			delay_ms(2500);	
+			limpia_pantalla();
+		}
+		
+		if((mi_variable >= 1200) && (mi_variable < 1300)){
+			imprime("de 1200 a 1300",100,0);
+			delay_ms(2500);	
+			limpia_pantalla();
+		}
+		
+		if((mi_variable >= 1300) && (mi_variable < 1400)){
+			imprime("de 1300 a 1400",100,0);
+			delay_ms(2500);	
+			limpia_pantalla();
+		}
+		
+		if((mi_variable >= 1400)){
+			imprime("mayor a 1400",100,0);
+			delay_ms(2500);	
+			limpia_pantalla();
+		}
+	}
 	
 }

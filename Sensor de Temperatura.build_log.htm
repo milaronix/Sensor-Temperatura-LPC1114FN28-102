@@ -7,11 +7,61 @@ C:\Users\Milaronix\Desktop\Microprocesadores\Sensor-Temperatura-LPC1114FN28-102\
 Project File Date:  11/03/2014
 
 <h2>Output:</h2>
-Build target 'Target 1'
+Rebuild target 'Target 1'
+assembling startup_LPC11xx.s...
+compiling main.c...
+compiling system_LPC11xx.c...
 linking...
-Program Size: Code=1244 RO-data=224 RW-data=12 ZI-data=612  
+Program Size: Code=2468 RO-data=224 RW-data=12 ZI-data=612  
 FromELF: creating hex file...
 ".\Sensor de Temperatura.axf" - 0 Error(s), 0 Warning(s).
-r(s), 0 Warning(s).
-ror(s), 0 Warning(s).
+in.c: 1 warning, 0 errors
+compiling system_LPC11xx.c...
+linking...
+Program Size: Code=1284 RO-data=224 RW-data=28 ZI-data=612  
+FromELF: creating hex file...
+".\Sensor de Temperatura.axf" - 0 Error(s), 1 Warning(s).
+c...
+".\Sensor de Temperatura.axf" - 2 Error(s), 2 Warning(s).
+Target not created
+.h(1565): warning:  #12-D: parsing restarts here after previous syntax error
+  } IRQn_t;
+lpc111x.h(1567): warning:  #260-D: explicit type is missing ("int" assumed)
+  static inline void NVIC_EnableIRQ(IRQn_t IRQn)
+lpc111x.h(1567): error:  #65: expected a ";"
+  static inline void NVIC_EnableIRQ(IRQn_t IRQn)
+adc.h(47): warning:  #12-D: parsing restarts here after previous syntax error
+  uint32_t   adcReadSingle (uint8_t channelNum);
+adc.c(96): error:  #268: declaration may not appear after executable statement in block
+    uint32_t regVal, adcData;
+adc.c(193): error:  #268: declaration may not appear after executable statement in block
+      uint32_t adcTotal, i;
+adc.c(261): error:  #20: identifier "PLLMULT" is undefined
+                ((((PLLMULT*XTAL) / SCB_SYSAHBCLKDIV) / 1000000 - 1 ) << 8) |   /* CLKDIV = Fpclk / 1000000 - 1 */ 
+adc.c(261): error:  #20: identifier "XTAL" is undefined
+                ((((PLLMULT*XTAL) / SCB_SYSAHBCLKDIV) / 1000000 - 1 ) << 8) |   /* CLKDIV = Fpclk / 1000000 - 1 */ 
+adc.c(71): warning:  #177-D: variable "_adcLastChannel" was declared but never referenced
+  static uint8_t _adcLastChannel = 0;
+adc.c: 5 warnings, 6 errors
+".\Sensor de Temperatura.axf" - 6 Error(s), 6 Warning(s).
+Target not created
+
+lpc111x.h(1567): warning:  #260-D: explicit type is missing ("int" assumed)
+  static inline void NVIC_EnableIRQ(IRQn_t IRQn)
+lpc111x.h(1567): error:  #65: expected a ";"
+  static inline void NVIC_EnableIRQ(IRQn_t IRQn)
+adc.h(47): warning:  #12-D: parsing restarts here after previous syntax error
+  uint32_t   adcReadSingle (uint8_t channelNum);
+adc.c(96): error:  #268: declaration may not appear after executable statement in block
+    uint32_t regVal, adcData;
+adc.c(193): error:  #268: declaration may not appear after executable statement in block
+      uint32_t adcTotal, i;
+adc.c(261): error:  #20: identifier "PLLMULT" is undefined
+                ((((PLLMULT*XTAL) / SCB_SYSAHBCLKDIV) / 1000000 - 1 ) << 8) |   /* CLKDIV = Fpclk / 1000000 - 1 */ 
+adc.c(261): error:  #20: identifier "XTAL" is undefined
+                ((((PLLMULT*XTAL) / SCB_SYSAHBCLKDIV) / 1000000 - 1 ) << 8) |   /* CLKDIV = Fpclk / 1000000 - 1 */ 
+adc.c(71): warning:  #177-D: variable "_adcLastChannel" was declared but never referenced
+  static uint8_t _adcLastChannel = 0;
+adc.c: 5 warnings, 6 errors
+".\Sensor de Temperatura.axf" - 9 Error(s), 11 Warning(s).
 Target not created
